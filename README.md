@@ -26,6 +26,16 @@ To update the firmware on the RN4870 PICtail, perform the following steps:
 <p align="center">
 <img src="https://user-images.githubusercontent.com/57740485/98047569-23b2bd00-1e52-11eb-86e9-01f3e4812eef.png" width=480>
 </p>
+## Firmware update using host MCU    
+  ## Host Controller Interface
+   The host and the controller communicate using the Host Controller Interface (HCI) protocol. This protocol is based on commands and events, i.e., the host sends (acknowledged) commands to the controller, and the controller uses events to notify the host. The HCI protocol can use different physical transports such as UART, SPI, and USB. The types of packets used are HCI command packet, HCI flash/data packets, HCI event response. 
+  ## Memory programming
+  The firmware update protocol follows the below described steps to access the memory of the device and execute the firmware update procedure. 
+1.	Enter memory programming Mode: This step involves setting the module into the Flash programming mode. This is primarily achieved by setting the P2_0 pin to ‘0’ via hardware. Once entered, in the next subsequent steps, the host uses the UART transport layer to communicate the HCI Commands and HCI-ISDAP Flash commands to read, write or erase data in the memory
+2.	Connect to the Flash: In this step, using the HCI commands, the external host can connect to the Flash in the device. The HCI event responses from the device, the user can verify that a successful connection is established with the Flash. 
+3.	Flash operations: Using the HCI-ISDAP Flash commands, operations on Flash, such as, read, write and erase can be performed. 
+4.	Disconnect from Flash: After the successful execution of flash memory operations, the external host needs to disconnect from the Flash by sending the relevant HCI commands to the device. The HCI event responses from the device can be used to verify the operation.
+
 
 
 
