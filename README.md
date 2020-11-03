@@ -24,7 +24,8 @@ To update the firmware on the RN4870 PICtail, perform the following steps:
 7. Update the firmware.
  
 <p align="center">
-<img src="E:\resources\FirmwareFlash.png" width=480>
+<img src="C:\Users\i20874\Desktop\resources\media\FirmwareFlash.png" width=480>
 </p>
 
 ![image info](E:\resources\FirmwareFlash.png)
+[](C:\Users\i20874\Desktop\resources\media\FirmwareFlash.png)
