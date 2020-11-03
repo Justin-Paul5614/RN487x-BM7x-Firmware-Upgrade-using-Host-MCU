@@ -18,8 +18,11 @@ To update the firmware on the RN4870 PICtail, perform the following steps:
 4. Press SW5 Reset button and verify that LED1 is showing a non-flashing blue that
      indicates the RN487x module is in programming mode.
 5. Launch the isupdate.exe application 
-      • Select the COM port used by the PICtail board
-      • Verify that other settings (baud, memory type, and address) 
+      - Select the COM port used by the PICtail board
+      - Verify that other settings (baud, memory type, and address) 
 6. Click the Connect button.
 7. Update the firmware.
  
+<p align="center">
+<img src="E:\resources\FirmwareFlash.png" width=480>
+</p>
