@@ -50,6 +50,16 @@ To update the firmware on the RN4870 PICtail, perform the following steps:
 4.	Disconnect from Flash: After the successful execution of flash memory operations, the external host needs to disconnect from the Flash by sending the relevant HCI commands to the device. The HCI event responses from the device can be used to verify the operation.
 
 
+# Device Firmware Upgrade Process
+## Entering Flash Programming Mode 
 
+For memory programming, the minimum set of hardware connections needed to interface an external host to the BM70/71 is shown in figure below.  Making these hardware connections between the host and controller will allow a host to control the behavior (i.e. enter memory programming mode, enter test mode, communicate, and calibrate) of the module.
 
+<p align="center">
+<img src="https://user-images.githubusercontent.com/57740485/98063459-1c9da600-1e76-11eb-8384-366d4a6b4188.png" width=480>
+</p>
+
+   The controller operation, or mode, is determined by the level of a hardware pin, P2_0.  This pin is sampled when the RST_N pin goes active.  The RST_N signal must be active for the minimum time, to make sure the pin P2_0 logic level is latched into the IC correctly. Once the controller enters the applicable mode, communication over the UART interface becomes active. The data or protocol which is used to communicate between the host and controller is based on the mode the controller enters after a reset.   
+At a high level, the memory programming mode is entered when pin P2_0 is latched by the controller at a logic level ‘0’.  
+The application, or run mode, where general BTLE operation is available, is entered when pin P2_0 is latched by the controller at a logic level ‘1’. Table 1 below summarizes the use of the P2_0 pin.
 
