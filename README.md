@@ -105,7 +105,7 @@ The data packet can be used for the read, write and erase operations. Each opera
 <img src="https://user-images.githubusercontent.com/57740485/98064850-51f7c300-1e79-11eb-92f0-8dd97785e045.png" width=480>
 </p>
 
-•	Command ID
+Command ID
 * Erase - 0x0112
 * Write - 0x0111
 * Read - 0x0110
@@ -154,4 +154,83 @@ After completing the Flash write process for flash the firmware files, the host 
    The embedded MPlabx application is created that implements the firmware update in the RN4870/1 and BM70/71 PICtail board using the host MCU which follows the device firmware update protocol. The Explorer 16/32 development Board with the PIC32MX795F512L is used as the host MCU.
                 
    The DFU Demo application project runs on supported Microchip development hardware noted in the Hardware Combinations section below. Pre-generated hex file for PIC32 ‘DFU_Demo.X.production.hex’ is available in the ‘\Applications\DFU_Demo\Precompiled_HEX’ folder.
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/57740485/98066159-262a0c80-1e7c-11eb-9da8-5f9a7f784042.png" width=480>
+</p>
+
+## Programming Demo
+ 
+1) Plug-in the PIC Plug-In-Module (PIM) into the Explorer 16 Development Board.
+- Note: On PIC32MX795F512L PIM, ensure that on jumpers J1 and J2 on the PIM, pins 2 and 3 are connected using a jumper to select the CAN configuration and all jumpers on J9 and J10 on the PIM are not connected. 
+
+2)  Plug-in the BM70 PICtail Plus board into the Explorer Development Board with the BM7x module facing towards the PIC PIM as shown in Figure.
+- Note: On the BM70 PICtail Plus board ensure that the following configuration is used
+   - Power Source jumper block J1 is set to use PIC
+   - Mode Switch SW7 is set to ON
+   - USB UART jumper block has only TX and RX jumpers populated
+
+3)  Connect the debug UART port to a PC terminal emulator program.
+- Note: On the Explorer 16 Development Board, debug UART is available on the DB9 UART serial connector P1.
+
+   Port - Select the COM port.\
+   Baudrate	- 115200.\
+   Data Bits - 8.\
+   Parity - None.\
+   Flow Control - None
+
+4)  Provide power through the 9V power input port available on the Explorer Development Board.
+
+5) Program the PIC32 with the ‘DFY_Demo.X.production.hex’ in the ‘Precompiled_HEX’ sub-directory using MPLAB REAL ICE tool.
+	
+
+6)  Alternately open the ‘DFU_Demo.X’ MPLABX workspace provided using the MPLABX IDE and compile and program or enter debug mode.
+	Please refer to the following links for help on MPLABX project operations.
+* Open a project: http://microchipdeveloper.com/mplabx:open-a-project
+* Program a project: http://microchipdeveloper.com/mplabx:build-release
+* Debug a project: http://microchipdeveloper.com/mplabx:build-debug
+
+## Running Demo Application
+     
+1)	After setting up the hardware combination and programming the PIC using the above steps run the PIC program. 
+
+2)	The program will start the updating the device firmware on the BM70 module. The sequence of operations of the DFU procedure can be observed on the debug UART.
+
+3)	Wait until the firmware update completes and the debug UART indicates the completion of the update.
+
+4)	Reboot the BM70 module for the updated firmware to start running. 
+
+## Required Hardware
+- BM70 PICtail Plus (BM-70-PICTAIL) 
+- Explorer 16 Development Board (DM240001)
+- PIC32MX795F512L Plug In Module (MA320003)
+
+## Replacing the Firmware text file                         
+
+* The default application will have the latest public released firmware (V1.40). 
+* 	User can use the same application to flash the older or newer version of firmware my replacing the firmware file (text file) that comes along with the application. 
+* 	Ready to flash web released RN firmware is available in multiple files. 
+* 	The firmware file is then converted into single test file, by using the below steps. 
+     1) Merge multiple hex files to sing hex file
+        - The multiple firmware files can be converted to single hex file using the HexMerge tool.
+     2) Convert the HEX values to Binary file 
+        - The avr-objcopy.exe utility or any other tool that achieve the similar functionality can be used to convert the HEX values to binary file. 
+     3) Convert single binary file to a C array
+        - The reference online tool can be used to convert the binary file to C array. 
+        - Tool to Convert binary to c header file 
+               - https://www.netzmal.de/bin2hex/
+        - Copy the all the hex values and paste in a text file. 
+        - Replace the existing text file in the project with this new text file. 
+
+## Guidelines to the end users
+                                  
+-	The user needs to consider taking adequate backup of the existing firmware running on the controller. The demo application erases the current firmware and update it with the newly flashed firmware. 
+-	Flashing the demo application to the host MCU will remove the existing application that resides in the MCU. The DFU Demo application showcases a proof-of-concept example that update the firmware on the BLE module. User needs to modify according to their requirement. 
+
+- The application flow is designed in such a way that it writes the firmware content into the flash memory and read back the content to make sure the writing action is executed successfully. The CRC check is not implemented either at the host MCU side nor at the BLE controller part to check whether the firmware is corrupted. 
+
+
+- Updating the existing firmware resides at the BLE controller will erase the configuration content (Pairing info, BLE name etc) just like the norm firmware update. The user needs to do the re-configuration again after the firmware update. 
+
+- The user needs to take care of the integrity and responsibility to ensure security concerns. 
 
