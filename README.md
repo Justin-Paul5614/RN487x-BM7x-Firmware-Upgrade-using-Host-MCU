@@ -28,13 +28,6 @@ To update the firmware on the RN4870 PICtail, perform the following steps:
 </p>
 
 
-
-
-
-
-
-
-
 # Firmware update using host MCU    
 
   ## Host Controller Interface
@@ -62,4 +55,103 @@ For memory programming, the minimum set of hardware connections needed to interf
    The controller operation, or mode, is determined by the level of a hardware pin, P2_0.  This pin is sampled when the RST_N pin goes active.  The RST_N signal must be active for the minimum time, to make sure the pin P2_0 logic level is latched into the IC correctly. Once the controller enters the applicable mode, communication over the UART interface becomes active. The data or protocol which is used to communicate between the host and controller is based on the mode the controller enters after a reset.   
 At a high level, the memory programming mode is entered when pin P2_0 is latched by the controller at a logic level ‘0’.  
 The application, or run mode, where general BTLE operation is available, is entered when pin P2_0 is latched by the controller at a logic level ‘1’. Table 1 below summarizes the use of the P2_0 pin.
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/57740485/98063851-fc221b80-1e76-11eb-857f-b605e77ca115.png" width=480>
+</p>
+
+## Commands
+  To flash a new firmware revision into the Flash, the user needs to follow the command protocol. The protocol is based on the HCI command protocol outlined in the Bluetooth specification (www.bluetooth.org) volume 2, Part E, “Host Controller Interface Functional Specification” and Volume 4, Part A, “UART Transport Layer. 
+
+   In general, the commands and responses for memory programming of the BM70/71 can be classified into three categories:
+   
+1. Command packets
+* Connection Packet
+* Disconnection Packet
+2. Data Packet
+* Erase Packet
+* Read Packet 
+*  Write Packet
+3. Event Response Packet
+
+# Connecting to the Flash
+Connection command is used to create a connection to a remote device.  With regards to memory programming, the host uses this packet to establish a programming session with module.  The parameters in the packet are all set to zero, which indicates to the BM7x device, a programming connection is requested by the host.
+
+-The HCI event responses from the device helps to verify that a successful connection is established with the Flash.
+## Connection Packet
+The host uses this command to establish a memory programming session with the module.
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/57740485/98064496-730be400-1e78-11eb-8167-6ebaf1833958.png" width=480>
+</p>
+
+## Connection Response format, module--->host
+The module will respond to this command with an HCI Event Response 
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/57740485/98064616-b49c8f00-1e78-11eb-9b5b-b431f5c950c8.png" width=480>
+</p>
+
+## Connect Sequence
+<p align="center">
+<img src="https://user-images.githubusercontent.com/57740485/98064672-dac22f00-1e78-11eb-935c-72c22fbaf12b.png" width=480>
+</p>
+
+## Flash operations
+After creating a programming session, the host next proceeds to execute flash operations using the HCI-ISDAP commands. 
+## Data Packet 
+The data packet can be used for the read, write and erase operations. Each operation uses a different command ID. 
+<p align="center">
+<img src="https://user-images.githubusercontent.com/57740485/98064850-51f7c300-1e79-11eb-92f0-8dd97785e045.png" width=480>
+</p>
+
+•	Command ID
+* Erase - 0x0112
+* Write - 0x0111
+* Read - 0x0110
+
+
+## Alternate data packet
+This packet type is mainly used for writing continue operation.
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/57740485/98065116-de09ea80-1e79-11eb-8283-58f265e24968.png" width=480>
+</p>
+
+There are 3 type of write operation
+* Initiate a write start command for the single write 
+* Then uses the write continue packets to write data 
+* Write stop can be used to stop the data write process 
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/57740485/98065769-3988a800-1e7b-11eb-9d70-01f0e39fe019.png" width=480>
+</p>
+
+Data will be sent in chunks; whose size gets added to packet length. If write continue operation follows this operation, then data will be appended after the data packet. The command ID session can be used to indicate the write continue operation. If this flag is set to a ‘1’, all subsequent write messages must be sent as Write 
+## Response sequence, module--->host
+The module will respond to the command with an HCI Event Response  
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/57740485/98065856-6f2d9100-1e7b-11eb-9ea4-dd626c637132.png" width=480>
+</p>
+
+## Disconnect 
+After completing the Flash write process for flash the firmware files, the host needs to disconnect from the flash using the following command to end the programming session.  
+## Disconnect packet
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/57740485/98065971-b156d280-1e7b-11eb-82d0-987e7d2b67bf.png" width=480>
+</p>
+
+##Programming Sequence
+         		 The demo application implements the firmware update protocol by incorporating the data into packets which creates the data and command packets as described in the Host Controller Interface specifications. The event response from the device is then monitored by the host to check on the status notification send back from the device. The programming sequence of the demo application is described in below diagram
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/57740485/98066030-d77c7280-1e7b-11eb-9a9d-e4ba8d72d8bb.png" width=480>
+</p>
+
+## DFU Demo Application
+   The embedded MPlabx application is created that implements the firmware update in the RN4870/1 and BM70/71 PICtail board using the host MCU which follows the device firmware update protocol. The Explorer 16/32 development Board with the PIC32MX795F512L is used as the host MCU.
+                
+   The DFU Demo application project runs on supported Microchip development hardware noted in the Hardware Combinations section below. Pre-generated hex file for PIC32 ‘DFU_Demo.X.production.hex’ is available in the ‘\Applications\DFU_Demo\Precompiled_HEX’ folder.
 
